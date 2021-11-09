@@ -37,15 +37,34 @@ import com.codelabs.state.util.generateRandomTodoItem
 import kotlin.random.Random
 
 @Composable
-fun TodoItemInput(onItemComplete: (TodoItem) -> Unit) {
-    val (text, setText) =  remember {mutableStateOf("")}
+fun TodoItemEntryInput(onItemComplete: (TodoItem) -> Unit) {
+    val (text, setText) = remember { mutableStateOf("") }
     val (icon, setIcon) = remember { mutableStateOf(TodoIcon.Default)}
-    val iconVisible = text.isNotBlank()
+    val iconsVisible = text.isNotBlank()
     val submit = {
         onItemComplete(TodoItem(text, icon))
         setIcon(TodoIcon.Default)
         setText("")
     }
+    TodoItemInput(
+        text = text,
+        onTextChange = setText,
+        icon = icon,
+        onIconChange = setIcon,
+        submit = submit,
+        iconsVisible = iconsVisible
+    )
+}
+
+@Composable
+fun TodoItemInput(
+    text: String,
+    onTextChange: (String) -> Unit,
+    icon: TodoIcon,
+    onIconChange: (TodoIcon) -> Unit,
+    submit: () -> Unit,
+    iconsVisible: Boolean
+) {
     Column {
         Row(
             Modifier
@@ -53,12 +72,12 @@ fun TodoItemInput(onItemComplete: (TodoItem) -> Unit) {
                 .padding(top = 16.dp)
         ) {
             TodoInputText(
-                text = text,
-                onTextChange = setText,
-                modifier = Modifier
+                text,
+                onTextChange,
+                Modifier
                     .weight(1f)
                     .padding(end = 8.dp),
-                onImeAction = submit
+                submit
             )
             TodoEditButton(
                 onClick = submit,
@@ -67,8 +86,8 @@ fun TodoItemInput(onItemComplete: (TodoItem) -> Unit) {
                 enabled = text.isNotBlank()
             )
         }
-        if (iconVisible) {
-            AnimatedIconRow(icon, setIcon, Modifier.padding(top = 8.dp))
+        if (iconsVisible) {
+            AnimatedIconRow(icon, onIconChange, Modifier.padding(top = 8.dp))
         } else {
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -82,7 +101,7 @@ fun TodoInputTextField(text: String, onTextChange: (String) -> Unit, modifier: M
 
 @Preview
 @Composable
-fun PreviewTodoItemImput() = TodoItemInput(onItemComplete = {})
+fun PreviewTodoItemImput() = TodoItemEntryInput(onItemComplete = {})
 
 /**
  * Stateless component that is responsible for the entire todo screen.
@@ -100,7 +119,7 @@ fun TodoScreen(
     Column {
         Column {
             TodoItemInputBackground(elevate = true, modifier = Modifier.fillMaxWidth()) {
-                TodoItemInput(onItemComplete = onAddItem)
+                TodoItemEntryInput(onItemComplete = onAddItem)
             }
         }
         Column {
