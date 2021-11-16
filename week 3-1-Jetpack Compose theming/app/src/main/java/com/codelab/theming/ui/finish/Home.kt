@@ -114,6 +114,7 @@ fun Header(
     modifier: Modifier = Modifier
 ) {
     Surface(
+        elevation = 2.dp,
         color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f),
         contentColor = MaterialTheme.colors.primary,
         modifier = modifier.semantics { heading() }
